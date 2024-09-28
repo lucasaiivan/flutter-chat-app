@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart'; 
 
 import 'package:chat/services/auth_service.dart';
+import '../helpers/mostrar_alerta.dart';
 import '../widgets/custom_imput.dart';
 import '../widgets/labels.dart'; 
 
@@ -69,6 +70,9 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+
     return Column(
       children: [ 
         Padding(
@@ -76,6 +80,7 @@ class _FormState extends State<_Form> {
           child: Column(
             children: [
               CustomInput(
+                enabled: !authService.autenticando,
                 icon: const Icon(Icons.email_outlined),
                 placeHolder: 'Correo Electrònico',
                 textEditingController: email_textEditingController,
@@ -83,6 +88,7 @@ class _FormState extends State<_Form> {
               ),
               const SizedBox(height:20),
               CustomInput(
+                enabled: !authService.autenticando,
                 icon: const Icon(Icons.lock_outline_sharp),
                 placeHolder: 'Contraseña',
                 textEditingController: pass_textEditingController,
@@ -94,12 +100,20 @@ class _FormState extends State<_Form> {
         ),
         const SizedBox(height:20),
         OutlinedButton(
-          onPressed: (){
-            if(email_textEditingController.text.isEmpty){return;}
-            print(email_textEditingController.text);    
-            print(pass_textEditingController.text);            // ... 
-            final authService = Provider.of<AuthService>(context,listen: false);
-            authService.login(email_textEditingController.text, pass_textEditingController.text);
+          onPressed: authService.autenticando?  null  : () async{
+            
+            if(email_textEditingController.text.isEmpty){return;}           // ... 
+            FocusScope.of(context).unfocus();
+            final bool loginOk = await authService.login(email_textEditingController.text.trim(), pass_textEditingController.text.trim());
+
+            if(loginOk){
+              // TODO : conectar al socket server
+              Navigator.pushReplacementNamed(context, 'usuarios');
+            }else{
+              // mostrar alerta
+              mostrarAlerta(context,title: 'Autenticación no valida',subtitle: 'Revise sus credenciales nuevamente');
+            }
+
           },
           child: const Text('Ingresar'),
         )

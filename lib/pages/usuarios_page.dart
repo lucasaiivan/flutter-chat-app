@@ -1,3 +1,4 @@
+import 'package:chat/services/auth_service.dart';
 import 'package:flutter/material.dart'; 
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -38,7 +39,12 @@ class _UsuariosPageState extends State<UsuariosPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Messager'),
-        leading: IconButton(onPressed: (){}, icon: const Icon(Icons.exit_to_app_outlined)),
+        leading: IconButton(onPressed: (){
+          // TODO : desconectar del socket service
+          Navigator.pushReplacementNamed(context,'login');
+          AuthService.deleteToken();
+          //...logout
+        }, icon: const Icon(Icons.exit_to_app_outlined)),
         actions: [
           offline,
           const SizedBox(width:12),
