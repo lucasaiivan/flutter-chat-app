@@ -32,7 +32,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
     _refreshController = RefreshController(initialRefresh: false);
 
     // widgets
-    Widget online = const Row(crossAxisAlignment: CrossAxisAlignment.center,children: [Icon(Icons.circle_rounded,size:6,color: Colors.green),SizedBox(width:2),Text('Online',style: TextStyle(color: Colors.green,fontSize: 12,fontWeight: FontWeight.bold))],);
+    //Widget online = const Row(crossAxisAlignment: CrossAxisAlignment.center,children: [Icon(Icons.circle_rounded,size:6,color: Colors.green),SizedBox(width:2),Text('Online',style: TextStyle(color: Colors.green,fontSize: 12,fontWeight: FontWeight.bold))],);
     Widget offline = const Row(crossAxisAlignment: CrossAxisAlignment.center,children: [Icon(Icons.circle_rounded,size:6,color: Colors.red),SizedBox(width:2),Text('Offline',style: TextStyle(color: Colors.red,fontSize: 12,fontWeight: FontWeight.bold))],);
 
 
