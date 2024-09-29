@@ -1,7 +1,11 @@
-import 'package:chat/services/auth_service.dart';
-import 'package:flutter/material.dart'; 
-
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'package:chat/services/chat_service.dart';
+import 'package:chat/services/usuarios_service.dart';
+import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 
 import 'package:chat/models/usuario.dart';
 
@@ -14,25 +18,33 @@ class UsuariosPage extends StatefulWidget {
 }
 
 class _UsuariosPageState extends State<UsuariosPage> {
+
   // controllers
-  late RefreshController _refreshController;
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
+
+  //
+  final usuariosService = UsuariosService();
+
 
   // var
-  final usuarios = [
-    Usuario(online: true, nombre: 'Lucas', email: 'lucas.ivan@gmail.com', uid: 'sf24gdsgsd'),
-    Usuario(online: true, nombre: 'Maria', email: 'maria234@gmail.com', uid: 'sfgdasfafsgsd'),
-    Usuario(online: false, nombre: 'Juan', email: 'juan34.3@gmail.com', uid: 'sfgdasfa24sfsgsd'),
-    Usuario(online: true, nombre: 'Fernando', email: 'Fer2019@gmail.com', uid: 'sfaa42424sfaf'),
-  ];
+  List<Usuario> usuarios = [];
+  
+
+  @override
+  void initState() {
+    cargarUsuarios();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
 
-    // controllers 
-    _refreshController = RefreshController(initialRefresh: false);
+    // provider
+    final socketServices = Provider.of<SocketService>(context);
+ 
 
     // widgets
-    //Widget online = const Row(crossAxisAlignment: CrossAxisAlignment.center,children: [Icon(Icons.circle_rounded,size:6,color: Colors.green),SizedBox(width:2),Text('Online',style: TextStyle(color: Colors.green,fontSize: 12,fontWeight: FontWeight.bold))],);
+    Widget online = const Row(crossAxisAlignment: CrossAxisAlignment.center,children: [Icon(Icons.circle_rounded,size:6,color: Colors.green),SizedBox(width:2),Text('Online',style: TextStyle(color: Colors.green,fontSize: 12,fontWeight: FontWeight.bold))],);
     Widget offline = const Row(crossAxisAlignment: CrossAxisAlignment.center,children: [Icon(Icons.circle_rounded,size:6,color: Colors.red),SizedBox(width:2),Text('Offline',style: TextStyle(color: Colors.red,fontSize: 12,fontWeight: FontWeight.bold))],);
 
 
@@ -40,13 +52,13 @@ class _UsuariosPageState extends State<UsuariosPage> {
       appBar: AppBar(
         title: const Text('Messager'),
         leading: IconButton(onPressed: (){
-          // TODO : desconectar del socket service
+          socketServices.disconnect();
           Navigator.pushReplacementNamed(context,'login');
           AuthService.deleteToken();
           //...logout
         }, icon: const Icon(Icons.exit_to_app_outlined)),
         actions: [
-          offline,
+          socketServices.online?online:offline,
           const SizedBox(width:12),
         ]
       ),
@@ -84,13 +96,19 @@ class _UsuariosPageState extends State<UsuariosPage> {
       title:Text(user.nombre),
       subtitle:Text(user.email),
       onTap: (){
+        final chatService = Provider.of<ChatService>(context,listen: false);
+        chatService.usuarioPara = user;
         Navigator.of(context).pushNamed('chat');
       },
+      
     );
   }
 
-  void cargarUsuarios() async{
-    await Future.delayed(const Duration(milliseconds: 1000)); 
+  void cargarUsuarios() async { 
+
+    
+    usuarios = await usuariosService.getUsuarios();
+
     _refreshController.refreshCompleted();
     setState(() { });
   } 

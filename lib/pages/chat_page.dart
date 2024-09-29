@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart'; 
+import 'package:provider/provider.dart';
 
+import 'package:chat/services/chat_service.dart';
 import 'package:chat/models/usuario.dart';
 import '../widgets/chat_message.dart';
 
@@ -24,8 +26,12 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
 
+
+    // provider 
+    final chatService = Provider.of<ChatService>(context,listen: false);
+
     // var 
-    final Usuario user = Usuario(online: true, nombre: 'Fernando', email: 'fer2019@gmail.com', uid:'34325tgergerdh');
+    final Usuario user = chatService.usuarioPara;
 
     return Scaffold(
       appBar: AppBar(title: Row(

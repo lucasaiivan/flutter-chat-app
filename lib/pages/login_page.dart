@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; 
 
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 import '../helpers/mostrar_alerta.dart';
 import '../widgets/custom_imput.dart';
 import '../widgets/labels.dart'; 
@@ -71,7 +72,9 @@ class _FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
 
+    // provider
     final authService = Provider.of<AuthService>(context);
+    final socketServices = Provider.of<SocketService>(context);
 
     return Column(
       children: [ 
@@ -107,7 +110,7 @@ class _FormState extends State<_Form> {
             final bool loginOk = await authService.login(email_textEditingController.text.trim(), pass_textEditingController.text.trim());
 
             if(loginOk){
-              // TODO : conectar al socket server
+              socketServices.connect();
               Navigator.pushReplacementNamed(context, 'usuarios');
             }else{
               // mostrar alerta
