@@ -1,6 +1,8 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:chat/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class ChatMessage extends StatelessWidget { 
 
@@ -11,7 +13,10 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return uid=='123'?_myMessage():_message();
+
+    final authService = Provider.of<AuthService>(context,listen: false);
+
+    return uid==authService.usuario.uid?_myMessage():_message();
   }
 
   Widget _myMessage(){
